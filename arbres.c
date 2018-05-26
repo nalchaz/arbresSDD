@@ -2,9 +2,10 @@
 
 /* Ca marche avec un simple pointeur */
 
-maillon_t * CreationArbre2(char * NomFic){
+maillon_t ** CreationArbre2(char * NomFic){
   FILE * fic;
-  maillon_t * temp, * racine, *cour;
+  maillon_t * temp, *cour, * racine;
+  maillon_t ** arbre;
   char c;
   pile_t * pile;
   int codeErreur;
@@ -18,7 +19,9 @@ maillon_t * CreationArbre2(char * NomFic){
   
     if(c == '('){
       c=fgetc(fic);
-      racine = CreerMaillon(c);
+      temp = CreerMaillon(c);
+      racine = temp;
+      arbre = &racine;
       cour = racine ;
     }
   }
@@ -38,7 +41,7 @@ maillon_t * CreationArbre2(char * NomFic){
 
     case ')' :
       if(EstVide(pile) == 0)
-    codeErreur = Depiler(pile, &cour);
+        codeErreur = Depiler(pile, &cour);
       break;
       
     case '\n' :
@@ -58,7 +61,7 @@ maillon_t * CreationArbre2(char * NomFic){
 
   puts("");
   LibererPile(pile);
-  return racine;
+  return arbre;
     
 }
 

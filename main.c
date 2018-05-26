@@ -8,7 +8,7 @@ int main(void){
   AffichageIte(arbre1);
   */
   
-  arbre1 = CreationArbre2("arbre.txt");
-  AffichageIte(arbre1);
+  arbre2 = CreationArbre2("arbre.txt");
+  AffichageIte(*arbre2);
   return 0;
 }
