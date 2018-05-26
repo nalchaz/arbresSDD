@@ -2,12 +2,14 @@
 
 /* Ca marche avec un simple pointeur */
 
-maillon_t ** CreationArbre2(char * NomFic){
+maillon_t ** CreationArbre(char * NomFic){
   FILE * fic;
-  maillon_t * temp, *cour, * racine;
-  maillon_t ** arbre;
-  char c;
+  maillon_t * temp, * racine;
+  maillon_t ** arbre, ** prec;
+  
   pile_t * pile;
+
+  char c;
   int codeErreur;
   
   pile = InitPile(TAILLE);
@@ -22,74 +24,7 @@ maillon_t ** CreationArbre2(char * NomFic){
       temp = CreerMaillon(c);
       racine = temp;
       arbre = &racine;
-      cour = racine ;
-    }
-  }
-  c=fgetc(fic);
-  while(c != EOF){
-    switch(c){
-    case '(' :
-      codeErreur = Empiler(pile, cour);
-      c=fgetc(fic);
-      temp = CreerMaillon(c);
-      cour->fils = temp;
-      cour = cour->fils;
-      break;
-      
-    case ',' :
-      break;
-
-    case ')' :
-      if(EstVide(pile) == 0)
-        codeErreur = Depiler(pile, &cour);
-      break;
-      
-    case '\n' :
-      break;
-      
-    default :
-      /* TODO Verifier affectation du frere */
-      temp = CreerMaillon(c);
-      cour->frere = temp;
-      cour = cour->frere;
-     
-      break;
-
-    }
-    c=fgetc(fic);
-  }
-
-  puts("");
-  LibererPile(pile);
-  return arbre;
-    
-}
-
-
-
-/* Version double pointeur qui marche pas */
-
-/*maillon_t ** CreationArbre(char * NomFic){
-  FILE * fic;
-  maillon_t ** arbre, ** prec;
-  maillon_t * temp, * racine;
-  char c;
-  pile_t * pile;
-  int codeErreur;
-  
-  pile = InitPile(TAILLE);
-  arbre = InitList();
-      
-  fic = fopen(NomFic, "r");
-      
-  if(fic != NULL){
-    c=fgetc(fic);
-  
-    if(c == '('){
-      c=fgetc(fic);
-      racine = CreerMaillon(c);
-      arbre = &racine;
-      prec = arbre;
+      prec = arbre ;
     }
   }
   c=fgetc(fic);
@@ -100,7 +35,7 @@ maillon_t ** CreationArbre2(char * NomFic){
       c=fgetc(fic);
       temp = CreerMaillon(c);
       (*prec)->fils = temp;
-      prec = &((*prec)->fils);
+      *prec = (*prec)->fils;
       break;
       
     case ',' :
@@ -108,16 +43,17 @@ maillon_t ** CreationArbre2(char * NomFic){
 
     case ')' :
       if(EstVide(pile) == 0)
-    codeErreur = Depiler(pile, prec);
+        codeErreur = Depiler(pile, prec);
       break;
       
     case '\n' :
       break;
       
     default :
+      /* TODO Verifier affectation du frere */
       temp = CreerMaillon(c);
       (*prec)->frere = temp;
-      prec = &((*prec)->frere);
+      *prec = (*prec)->frere;
      
       break;
 
@@ -126,10 +62,11 @@ maillon_t ** CreationArbre2(char * NomFic){
   }
 
   puts("");
+  fclose(fic);
   LibererPile(pile);
-  return racine;
+  return arbre;
     
-}*/
+}
 
 void afficherArbre(maillon_t * arbre){
   if(arbre != NULL){
