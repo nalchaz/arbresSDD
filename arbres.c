@@ -1,6 +1,12 @@
 #include "arbres.h"
 
-
+/* -------------------------------------------------------------------- */
+/* CreationArbre     Creer un arbre a partir d'un fichier               */
+/*                                                                      */
+/* En entree: NomFic : nom du fichier dans lequel trouver l'arbre       */
+/*                                                                      */
+/* En sortie: adresse de l'arbre creer                                  */
+/* -------------------------------------------------------------------- */
 maillon_t * CreationArbre(char * NomFic){
   FILE * fic;
   maillon_t * temp;
@@ -75,24 +81,24 @@ maillon_t * CreationArbre(char * NomFic){
 /* -------------------------------------------------------------------- */
 maillon_t * RechercheValeur(maillon_t ** racine, char valeur){
 	
-	maillon_t * cour ;
-	file_t * file;
-	int CodeErreur ;
+  maillon_t * cour ;
+  file_t * file;
+  int CodeErreur ;
 	
-	cour = *racine;
-	file = InitFile(TAILLE);
-	CodeErreur = 0;
+  cour = *racine;
+  file = InitFile(TAILLE);
+  CodeErreur = 0;
 	
-	while (!CodeErreur && cour != NULL && cour->val != valeur){	
-		while (!CodeErreur && cour != NULL && cour->val != valeur){	
-			if (cour->fils != NULL) CodeErreur = Enfiler(file, cour->fils);
-			cour = cour->frere;
-		}
-		if (cour == NULL && !EstVidef(file)) CodeErreur = Defiler(file, &cour);	
-	}
+  while (!CodeErreur && cour != NULL && cour->val != valeur){	
+    while (!CodeErreur && cour != NULL && cour->val != valeur){	
+      if (cour->fils != NULL) CodeErreur = Enfiler(file, cour->fils);
+      cour = cour->frere;
+    }
+    if (cour == NULL && !EstVidef(file)) CodeErreur = Defiler(file, &cour);	
+  }
 	
-	LibererFile(file);
-	return cour;
+  LibererFile(file);
+  return cour;
 	
 }
 
@@ -112,16 +118,16 @@ maillon_t * RechercheValeur(maillon_t ** racine, char valeur){
 /* -------------------------------------------------------------------- */
 maillon_t * parcoursFilsTrie(maillon_t * pere, char valeur){
 
-	maillon_t ** prec ;
-	prec = &pere;
+  maillon_t ** prec ;
+  prec = &pere;
 	
-	if ((*prec)->fils != NULL){ /* Cas où le père possède au moins un fils */
-		prec = &((*prec)->fils);
-		while (*prec != NULL && (*prec)->val > valeur ){
-			prec = &((*prec)->frere) ;
-		}
-	}
-	return *prec ;
+  if ((*prec)->fils != NULL){ /* Cas où le père possède au moins un fils */
+    prec = &((*prec)->fils);
+    while (*prec != NULL && (*prec)->val > valeur ){
+      prec = &((*prec)->frere) ;
+    }
+  }
+  return *prec ;
 }
 
 
@@ -138,74 +144,86 @@ maillon_t * parcoursFilsTrie(maillon_t * pere, char valeur){
 /* En sortie: aucune						      	*/
 /* -------------------------------------------------------------------- */
 void RechercheEtInsertion(maillon_t ** racine, char W, char V){
-	maillon_t 		*pere, *PereOuFrere, *nouv ;
+  maillon_t 		*pere, *PereOuFrere, *nouv ;
 
-	pere = RechercheValeur(racine, V);
+  pere = RechercheValeur(racine, V);
 	
-	if (pere != NULL){
-		PereOuFrere = parcoursFilsTrie(pere, W);
-		nouv = CreerMaillon(W);
+  if (pere != NULL){
+    PereOuFrere = parcoursFilsTrie(pere, W);
+    nouv = CreerMaillon(W);
 		
-		if (nouv != NULL){
+    if (nouv != NULL){
 			
-			if (PereOuFrere != pere){ /* Cas où le père a au moins un fils */
-				nouv->frere = PereOuFrere->frere;
-				PereOuFrere->frere = nouv ;
-			}else{ /* Cas où le père n'a pas de fils */
-				PereOuFrere->fils = nouv;
-			}
-		}
-	}
+      if (PereOuFrere != pere){ /* Cas où le père a au moins un fils */
+	nouv->frere = PereOuFrere->frere;
+	PereOuFrere->frere = nouv ;
+      }else{ /* Cas où le père n'a pas de fils */
+	PereOuFrere->fils = nouv;
+      }
+    }
+  }
 }
 
-
+/* -------------------------------------------------------------------- */
+/* AffichagePostfixee    Affichage post fixee d'un arbre                */
+/*		       		       					*/
+/* En entree: arbre : l'arbre a afficher 	                	*/
+/*                                                                      */
+/* En sortie: aucune						      	*/
+/* -------------------------------------------------------------------- */
 void AffichagePostfixee(maillon_t * arbre){
-	maillon_t * cour;
-	pile_t * pile;
-    int codeErreur = 0;
+  maillon_t * cour;
+  pile_t * pile;
+  int codeErreur = 0;
 
-    cour = arbre;
-    pile = InitPile(1000);
+  cour = arbre;
+  pile = InitPile(1000);
      
-    while (cour != NULL && !codeErreur){
+  while (cour != NULL && !codeErreur){
 	
-		while (cour->fils != NULL){
-			Empiler(pile, cour);
-			cour = cour->fils;
-		}
-		printf("%c ", cour->val);
-		cour = cour->frere;
+    while (cour->fils != NULL){
+      Empiler(pile, cour);
+      cour = cour->fils;
+    }
+    printf("%c ", cour->val);
+    cour = cour->frere;
 		
-		while (cour == NULL && !EstVide(pile)){
-			codeErreur = Depiler(pile, &cour);
-			printf("%c ", cour->val);
-			cour = cour->frere;
-		}
-	}
+    while (cour == NULL && !EstVide(pile)){
+      codeErreur = Depiler(pile, &cour);
+      printf("%c ", cour->val);
+      cour = cour->frere;
+    }
+  }
 	
-	LibererPile(pile);
+  LibererPile(pile);
 }
 
 
-
+/* -------------------------------------------------------------------- */
+/* AffichageIte    Affichage iteratif de l'arbre                        */
+/*                                                                      */
+/* En entree:  arbre : arbre a afficher 	                	*/
+/*                                                                      */
+/* En sortie: aucune						      	*/
+/* -------------------------------------------------------------------- */
 void AffichageIte(maillon_t * arbre){
 
-    maillon_t * cour;
-    pile_t * pile;
-    int codeErreur = 0;
+  maillon_t * cour;
+  pile_t * pile;
+  int codeErreur = 0;
 
-    cour = arbre;
-    pile = InitPile(TAILLE);
+  cour = arbre;
+  pile = InitPile(TAILLE);
          
-    while (cour != NULL && !codeErreur){
-		printf("%c ", cour->val);
-        if (cour->frere != NULL) Empiler(pile, cour);
-        cour = cour->fils;
-        if (cour == NULL && !EstVide(pile)){
-            codeErreur = Depiler(pile, &cour);
-            cour = cour->frere ;
-        }
+  while (cour != NULL && !codeErreur){
+    printf("%c ", cour->val);
+    if (cour->frere != NULL) Empiler(pile, cour);
+    cour = cour->fils;
+    if (cour == NULL && !EstVide(pile)){
+      codeErreur = Depiler(pile, &cour);
+      cour = cour->frere ;
     }
-    LibererPile(pile);
-    puts("");
+  }
+  LibererPile(pile);
+  puts("");
 }
