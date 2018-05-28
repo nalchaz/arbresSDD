@@ -1,11 +1,10 @@
 #include "arbres.h"
 
-/* Ca marche avec un simple pointeur */
 
-maillon_t ** CreationArbre(char * NomFic){
+maillon_t * CreationArbre(char * NomFic){
   FILE * fic;
-  maillon_t * temp, * racine;
-  maillon_t ** arbre, ** prec;
+  maillon_t * temp;
+  maillon_t * arbre, ** prec;
   
   pile_t * pile;
 
@@ -21,10 +20,8 @@ maillon_t ** CreationArbre(char * NomFic){
   
     if(c == '('){
       c=fgetc(fic);
-      temp = CreerMaillon(c);
-      racine = temp;
-      arbre = &racine;
-      prec = arbre ;
+      arbre = CreerMaillon(c);
+      prec = &arbre ;
     }
   }
   c=fgetc(fic);
@@ -50,7 +47,6 @@ maillon_t ** CreationArbre(char * NomFic){
       break;
       
     default :
-      /* TODO Verifier affectation du frere */
       temp = CreerMaillon(c);
       (*prec)->frere = temp;
       *prec = (*prec)->frere;
@@ -68,19 +64,128 @@ maillon_t ** CreationArbre(char * NomFic){
     
 }
 
-void afficherArbre(maillon_t * arbre){
-  if(arbre != NULL){
-    printf("%c\t", arbre->val);
-    if(arbre->fils){
-      afficherArbre(arbre->fils);
-    }
-    puts("");
-    printf("Actuel : %c Frere : %c\n", arbre->val, arbre->frere->val); 
-    if(arbre->frere){
-      afficherArbre(arbre->frere);
-    }
-  }
+/* -------------------------------------------------------------------- */
+/* RechercheValeur     Recherche une valeur dans un arbre               */
+/*                                                                      */
+/* En entree: racine : la racine de l'arbre			        */
+/*            valeur : valeur à rechercher dans l'arbre                 */
+/*                                                                      */
+/* En sortie: adresse de la valeur recherchée		         	*/
+/* 			  NULL si non trouvée                           */
+/* -------------------------------------------------------------------- */
+maillon_t * RechercheValeur(maillon_t ** racine, char valeur){
+	
+	maillon_t * cour ;
+	file_t * file;
+	int CodeErreur ;
+	
+	cour = *racine;
+	file = InitFile(TAILLE);
+	CodeErreur = 0;
+	
+	while (!CodeErreur && cour != NULL && cour->val != valeur){	
+		while (!CodeErreur && cour != NULL && cour->val != valeur){	
+			if (cour->fils != NULL) CodeErreur = Enfiler(file, cour->fils);
+			cour = cour->frere;
+		}
+		if (cour == NULL && !EstVidef(file)) CodeErreur = Defiler(file, &cour);	
+	}
+	
+	LibererFile(file);
+	return cour;
+	
 }
+
+/* -------------------------------------------------------------------- */
+/* parcoursFilsTrie     Recherche de l'emplacement d'une        	*/
+/* 		      	valeur dans une liste de fils triée             */
+/*                                                                      */
+/* En entree: pere : pere de la liste des fils                   	*/
+/*            valeur : valeur dont l'on souhaite connaître      	*/
+/*        	       l'emplacement  				        */
+/*                                                                      */
+/* En sortie: 						        	*/
+/*  - si le pere V a au moins un fils : retourne l'adresse du fils    	*/
+/*    après lequel il faudrait		                                */ 
+/*    insérer la valeur W				                */
+/*  - si le pere V n'a pas de fils : retourne l'adresse de V    	*/
+/* -------------------------------------------------------------------- */
+maillon_t * parcoursFilsTrie(maillon_t * pere, char valeur){
+
+	maillon_t ** prec ;
+	prec = &pere;
+	
+	if ((*prec)->fils != NULL){ /* Cas où le père possède au moins un fils */
+		prec = &((*prec)->fils);
+		while (*prec != NULL && (*prec)->val > valeur ){
+			prec = &((*prec)->frere) ;
+		}
+	}
+	return *prec ;
+}
+
+
+/* -------------------------------------------------------------------- */
+/* RechercheEtInsertion    Insertion d'un fils de valeur W              */
+/* 	        	au point de valeur V s'il existe		*/
+/*		       		       					*/
+/* HYP : les fils d'un points sont triés par ordre croissant   		*/
+/*                                                                      */
+/* En entree: racine : la racine de l'arbre	                	*/
+/*            	   W : valeur du fils à insérer	                 	*/
+/*	           V : valeur du pere auquel on veut ajouter un fils	*/
+/*                                                                      */
+/* En sortie: aucune						      	*/
+/* -------------------------------------------------------------------- */
+void RechercheEtInsertion(maillon_t ** racine, char W, char V){
+	maillon_t 		*pere, *PereOuFrere, *nouv ;
+
+	pere = RechercheValeur(racine, V);
+	
+	if (pere != NULL){
+		PereOuFrere = parcoursFilsTrie(pere, W);
+		nouv = CreerMaillon(W);
+		
+		if (nouv != NULL){
+			
+			if (PereOuFrere != pere){ /* Cas où le père a au moins un fils */
+				nouv->frere = PereOuFrere->frere;
+				PereOuFrere->frere = nouv ;
+			}else{ /* Cas où le père n'a pas de fils */
+				PereOuFrere->fils = nouv;
+			}
+		}
+	}
+}
+
+
+void AffichagePostfixee(maillon_t * arbre){
+	maillon_t * cour;
+	pile_t * pile;
+    int codeErreur = 0;
+
+    cour = arbre;
+    pile = InitPile(1000);
+     
+    while (cour != NULL && !codeErreur){
+	
+		while (cour->fils != NULL){
+			Empiler(pile, cour);
+			cour = cour->fils;
+		}
+		printf("%c ", cour->val);
+		cour = cour->frere;
+		
+		while (cour == NULL && !EstVide(pile)){
+			codeErreur = Depiler(pile, &cour);
+			printf("%c ", cour->val);
+			cour = cour->frere;
+		}
+	}
+	
+	LibererPile(pile);
+}
+
 
 
 void AffichageIte(maillon_t * arbre){
@@ -90,10 +195,10 @@ void AffichageIte(maillon_t * arbre){
     int codeErreur = 0;
 
     cour = arbre;
-    pile = InitPile(1000);
-     
+    pile = InitPile(TAILLE);
+         
     while (cour != NULL && !codeErreur){
-    printf("%c ", cour->val);
+		printf("%c ", cour->val);
         if (cour->frere != NULL) Empiler(pile, cour);
         cour = cour->fils;
         if (cour == NULL && !EstVide(pile)){

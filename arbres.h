@@ -5,8 +5,12 @@
 
 #include "liste.h"
 #include "pile.h"
-maillon_t ** CreationArbre(char *);
-void afficherArbre(maillon_t *);
-void AffichageIte(maillon_t *);
+#include "file.h"
 
+maillon_t * CreationArbre(char *);
+void AffichageIte(maillon_t *);
+maillon_t * RechercheValeur(maillon_t **, char);
+maillon_t * parcoursFilsTrie(maillon_t *, char);
+void RechercheEtInsertion(maillon_t **, char, char);
+void AffichagePostfixee(maillon_t *);
 #endif

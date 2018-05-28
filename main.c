@@ -1,14 +1,16 @@
 #include "arbres.h"
 
 int main(void){
-  maillon_t * arbre1;
-  maillon_t ** arbre2;
+  maillon_t * arbre;
   
-  /*arbre1 = CreationArbre("arbre.txt");
-  AffichageIte(arbre1);
-  */
+  arbre = CreationArbre("arbre.txt");
+  printf("Avant :\n");
+  AffichageIte(arbre);
+
+  RechercheEtInsertion(&arbre, 'r', 'x');
   
-  arbre2 = CreationArbre("arbre.txt");
-  AffichageIte(*arbre2);
+  printf("Dopo :\n");
+  AffichageIte(arbre);
+  
   return 0;
 }
