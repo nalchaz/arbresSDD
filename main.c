@@ -2,6 +2,7 @@
 
 int main(void){
   maillon_t * arbre;
+  maillon2_t * arbre2;
   
   arbre = CreationArbre("arbre.txt");
   printf("Avant :\n");
@@ -12,5 +13,7 @@ int main(void){
   printf("Dopo :\n");
   AffichageIte(arbre);
   
+  printf("On copie...\n");
+  arbre2 = CopieArbre(arbre);
   return 0;
 }

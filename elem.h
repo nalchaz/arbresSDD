@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "liste.h"
 
-typedef maillon_t * elem_t ;
+typedef maillon_t * elem_t;
 
 void AfficherElem(elem_t);
 #endif

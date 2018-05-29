@@ -165,6 +165,59 @@ void RechercheEtInsertion(maillon_t ** racine, char W, char V){
 }
 
 /* -------------------------------------------------------------------- */
+/* CopieArbre  Creer une copie d'un arbre avec des pointeurs sur pere   */
+/*		       		       					*/
+/*                                                                      */
+/* En entree: arbre1 : l'arbre a copier    	                	*/
+/*                                                                      */
+/* En sortie: l'arbre copie					      	*/
+/* -------------------------------------------------------------------- */
+maillon2_t * CopieArbre(maillon_t * arbre1){
+  maillon2_t *arbre2, **temp, ** prec;
+  maillon_t * cour;
+  int CodeErreur1;
+  pile_t *pile;
+	
+  pile = InitPile(TAILLE);
+  CodeErreur1 = 0;
+	
+  /* Création de la racine */
+  arbre2 = CreerMaillon(arbre1->val);
+  arbre2->pere = arbre2;
+  arbre2->frere = NULL;
+	
+  /* Courant sur l'arbre à 3 cellules, prec sur l'arbre ) 4 */
+  cour = arbre1->fils;
+  prec = &arbre2;
+    
+  while(cour != NULL){
+    /*Creation du noeud*/
+    temp = CreerMaillon(cour->val);
+    (*prec)->fils = temp;
+    (*prec)->fils->pere = (*prec);
+    prec = &((*prec)->fils);
+		
+    while (cour != NULL){ /*Parcours des freres*/
+      if(cour->fils != NULL){ /* Si le noeud a un fils on enfile */
+	CodeErreur1 = Enpiler(pile, cour->fils);
+      }
+      /*Création du frere*/
+      temp = CreerMaillon(cour->val);
+      (*prec)->frere = temp;
+      (*prec)->frere->pere = (*prec)->pere;
+      prec = &((*prec)->frere);
+			 
+    }
+		
+    if (!EstVide(pile)){
+      CodeErreur = Depiler(pile, &cour);
+    }
+  }
+	
+  return arbre2;
+}
+
+/* -------------------------------------------------------------------- */
 /* AffichagePostfixee    Affichage post fixee d'un arbre                */
 /*		       		       					*/
 /* En entree: arbre : l'arbre a afficher 	                	*/
@@ -194,7 +247,6 @@ void AffichagePostfixee(maillon_t * arbre){
       cour = cour->frere;
     }
   }
-	
   LibererPile(pile);
 }
 

@@ -15,8 +15,13 @@ typedef struct maillon{
   struct maillon      * fils, * frere;
 }maillon_t;
 
+typedef struct maillon2{
+  char                val;
+  struct maillon2      * fils, * frere, *pere;
+}maillon2_t;
+
 maillon_t ** InitList();
 maillon_t * CreerMaillon(char);
-
+maillon2_t *CreerMaillon2(char);
 
 #endif

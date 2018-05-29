@@ -45,3 +45,28 @@ maillon_t * CreerMaillon (char val){
   
   return nouv ; /*retourne NULL si pas alloué*/
 }
+
+
+/* -------------------------------------------------------------------- */
+/* CreerMaillon2       Créer un nouveau maillon à 4 cellules            */
+/*  	            (Dans le cas des arbres, c'est un noeud)            */
+/*                                                                      */
+/* En entree: val  : valeur de l'élement à créer        		*/
+/*		                                 			*/
+/* En sortie: Adresse du maillon créé			                */
+/* -------------------------------------------------------------------- */
+maillon2_t * CreerMaillon2 (char val){
+  
+  maillon2_t 	* nouv;
+  
+  nouv = (maillon2_t*)malloc(sizeof(maillon2_t));
+  
+  if(nouv != NULL){
+    nouv->val=val;
+    nouv->frere = NULL;
+    nouv->fils = NULL;
+    nouv->pere = NULL;
+  }
+  
+  return nouv ; /*retourne NULL si pas alloué*/
+}
