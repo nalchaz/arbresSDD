@@ -15,7 +15,6 @@ maillon_t * CreationArbre(char * NomFic){
   pile_t * pile;
 
   char c;
-  int codeErreur;
   
   pile = InitPile(TAILLE);
       
@@ -34,7 +33,7 @@ maillon_t * CreationArbre(char * NomFic){
   while(c != EOF){
     switch(c){
     case '(' :
-      codeErreur = Empiler(pile, *prec);
+      Empiler(pile, *prec);
       c=fgetc(fic);
       temp = CreerMaillon(c);
       (*prec)->fils = temp;
@@ -46,7 +45,7 @@ maillon_t * CreationArbre(char * NomFic){
 
     case ')' :
       if(EstVide(pile) == 0)
-        codeErreur = Depiler(pile, prec);
+        Depiler(pile, prec);
       break;
       
     case '\n' :
@@ -173,45 +172,49 @@ void RechercheEtInsertion(maillon_t ** racine, char W, char V){
 /* En sortie: l'arbre copie					      	*/
 /* -------------------------------------------------------------------- */
 maillon2_t * CopieArbre(maillon_t * arbre1){
-  maillon2_t *arbre2, **temp, ** prec;
+  maillon2_t * arbre2, * temp;
+  maillon2_t ** prec;
   maillon_t * cour;
-  int CodeErreur1;
+  int fin;
   pile_t *pile;
 	
   pile = InitPile(TAILLE);
-  CodeErreur1 = 0;
+  fin = 0;
 	
   /* Création de la racine */
-  arbre2 = CreerMaillon(arbre1->val);
+  arbre2 = CreerMaillon2(arbre1->val);
   arbre2->pere = arbre2;
   arbre2->frere = NULL;
 	
-  /* Courant sur l'arbre à 3 cellules, prec sur l'arbre ) 4 */
-  cour = arbre1->fils;
+  /* Courant sur l'arbre a copier, prec sur le nouvel arbre */
+  cour = arbre1;
   prec = &arbre2;
     
-  while(cour != NULL){
-    /*Creation du noeud*/
-    temp = CreerMaillon(cour->val);
-    (*prec)->fils = temp;
-    (*prec)->fils->pere = (*prec);
-    prec = &((*prec)->fils);
-		
-    while (cour != NULL){ /*Parcours des freres*/
-      if(cour->fils != NULL){ /* Si le noeud a un fils on enfile */
-	CodeErreur1 = Enpiler(pile, cour->fils);
-      }
-      /*Création du frere*/
-      temp = CreerMaillon(cour->val);
+  while(!fin){
+
+    while(cour->fils != NULL){
+      Empiler(pile, cour);
+      cour = cour->fils;
+      temp = CreerMaillon2(cour->val);
+      (*prec)->fils = temp;
+      (*prec)->fils->pere = *prec;
+      prec = &((*prec)->fils);
+    }
+    
+    while (cour->frere == NULL && !EstVide(pile)){ 
+      Depiler(pile, &cour);
+      prec = &((*prec)->pere);
+    }
+    if(cour->frere == NULL && EstVide(pile)){
+      fin = 1;
+    }
+    else{
+      cour = cour->frere;
+      temp = CreerMaillon2(cour->val);
       (*prec)->frere = temp;
       (*prec)->frere->pere = (*prec)->pere;
       prec = &((*prec)->frere);
-			 
-    }
-		
-    if (!EstVide(pile)){
-      CodeErreur = Depiler(pile, &cour);
-    }
+    }		 
   }
 	
   return arbre2;
@@ -279,3 +282,33 @@ void AffichageIte(maillon_t * arbre){
   LibererPile(pile);
   puts("");
 }
+
+/* -------------------------------------------------------------------- */
+/* AffichageIte2    Affichage iteratif de l'arbre avec pere             */
+/*                                                                      */
+/* En entree:  arbre : arbre a afficher 	                	*/
+/*                                                                      */
+/* En sortie: aucune						      	*/
+/* -------------------------------------------------------------------- */
+/*void AffichageIte2(maillon2_t * arbre){
+
+  maillon2_t * cour;
+  pile_t * pile;
+  int codeErreur = 0;
+
+  cour = arbre;
+  pile = InitPile(TAILLE);
+         
+  while (cour != NULL && !codeErreur){
+    printf("(%c, %c) ", cour->val, cour->pere->val);
+    if (cour->frere != NULL) Empiler(pile, cour);
+    cour = cour->fils;
+    if (cour == NULL && !EstVide(pile)){
+      codeErreur = Depiler(pile, &cour);
+      cour = cour->frere ;
+    }
+  }
+  LibererPile(pile);
+  puts("");
+}*/
+
