@@ -290,25 +290,31 @@ void AffichageIte(maillon_t * arbre){
 /*                                                                      */
 /* En sortie: aucune						      	*/
 /* -------------------------------------------------------------------- */
-/*void AffichageIte2(maillon2_t * arbre){
+void AffichageIte2(maillon2_t * arbre){
 
   maillon2_t * cour;
-  pile_t * pile;
-  int codeErreur = 0;
+  int fin;
 
+  fin = 0;
   cour = arbre;
-  pile = InitPile(TAILLE);
-         
-  while (cour != NULL && !codeErreur){
-    printf("(%c, %c) ", cour->val, cour->pere->val);
-    if (cour->frere != NULL) Empiler(pile, cour);
-    cour = cour->fils;
-    if (cour == NULL && !EstVide(pile)){
-      codeErreur = Depiler(pile, &cour);
-      cour = cour->frere ;
+  printf("(fils, pere) : \n");
+  printf("(%c, %c) ", cour->val, cour->pere->val);
+
+  while (!fin){
+    while (cour->fils != NULL){
+      cour = cour->fils;
+      printf("(%c, %c) ", cour->val, cour->pere->val);
+    }
+    while (cour->frere == NULL && cour->pere != cour){
+      cour = cour->pere;
+    }
+    if(cour->frere == NULL){
+      fin = 1;
+    }
+    else{
+      cour = cour->frere;
+      printf("(%c, %c) ", cour->val, cour->pere->val);
     }
   }
-  LibererPile(pile);
   puts("");
-}*/
-
+}

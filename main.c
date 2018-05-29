@@ -15,5 +15,6 @@ int main(void){
   
   printf("On copie...\n");
   arbre2 = CopieArbre(arbre);
+  AffichageIte2(arbre2);
   return 0;
 }

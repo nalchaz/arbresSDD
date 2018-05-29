@@ -15,6 +15,6 @@ maillon2_t * CopieArbre(maillon_t *);
 void RechercheEtInsertion(maillon_t **, char, char);
 void AffichagePostfixee(maillon_t *);
 void AffichageIte(maillon_t *);
-
+void AffichageIte2(maillon2_t *);
 
 #endif
