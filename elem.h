@@ -5,7 +5,11 @@
 #include <stdlib.h>
 #include "liste.h"
 
-typedef maillon_t * elem_t;
+typedef union elem
+{
+    maillon_t * noeud;
+    int fils;
+}elem_t;
 
 void AfficherElem(elem_t);
 #endif

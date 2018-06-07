@@ -11,9 +11,8 @@ maillon_t * CreationArbre(char * NomFic){
   FILE * fic;
   maillon_t * temp;
   maillon_t * arbre, ** prec;
-  
   pile_t * pile;
-
+  elem_t nouv;
   char c;
   
   pile = InitPile(TAILLE);
@@ -33,7 +32,8 @@ maillon_t * CreationArbre(char * NomFic){
   while(c != EOF){
     switch(c){
     case '(' :
-      Empiler(pile, *prec);
+      nouv.noeud = *prec;
+      Empiler(pile, nouv);
       c=fgetc(fic);
       temp = CreerMaillon(c);
       (*prec)->fils = temp;
@@ -45,7 +45,8 @@ maillon_t * CreationArbre(char * NomFic){
 
     case ')' :
       if(EstVide(pile) == 0)
-        Depiler(pile, prec);
+        Depiler(pile, &nouv);
+        *prec=nouv.noeud;
       break;
       
     case '\n' :
@@ -83,17 +84,24 @@ maillon_t * RechercheValeur(maillon_t ** racine, char valeur){
   maillon_t * cour ;
   file_t * file;
   int CodeErreur ;
-	
+	elem_t tmp;
+
   cour = *racine;
   file = InitFile(TAILLE);
   CodeErreur = 0;
 	
   while (!CodeErreur && cour != NULL && cour->val != valeur){	
     while (!CodeErreur && cour != NULL && cour->val != valeur){	
-      if (cour->fils != NULL) CodeErreur = Enfiler(file, cour->fils);
+      if (cour->fils != NULL){
+        tmp.noeud = cour->fils;
+        CodeErreur = Enfiler(file, tmp);
+      }
       cour = cour->frere;
     }
-    if (cour == NULL && !EstVidef(file)) CodeErreur = Defiler(file, &cour);	
+    if (cour == NULL && !EstVidef(file)){ 
+      CodeErreur = Defiler(file, &tmp);
+      cour = tmp.noeud;
+    }	
   }
 	
   LibererFile(file);
@@ -177,13 +185,14 @@ maillon2_t * CopieArbre(maillon_t * arbre1){
   maillon_t * cour;
   int fin;
   pile_t *pile;
+  elem_t tmp;
 	
   pile = InitPile(TAILLE);
   fin = 0;
 	
   /* Création de la racine */
   arbre2 = CreerMaillon2(arbre1->val);
-  arbre2->pere = arbre2;
+  arbre2->pere = NULL;
   arbre2->frere = NULL;
 	
   /* Courant sur l'arbre a copier, prec sur le nouvel arbre */
@@ -193,7 +202,8 @@ maillon2_t * CopieArbre(maillon_t * arbre1){
   while(!fin){
 
     while(cour->fils != NULL){
-      Empiler(pile, cour);
+      tmp.noeud = cour;
+      Empiler(pile, tmp);
       cour = cour->fils;
       temp = CreerMaillon2(cour->val);
       (*prec)->fils = temp;
@@ -202,7 +212,8 @@ maillon2_t * CopieArbre(maillon_t * arbre1){
     }
     
     while (cour->frere == NULL && !EstVide(pile)){ 
-      Depiler(pile, &cour);
+      Depiler(pile, &tmp);
+      cour = tmp.noeud;
       prec = &((*prec)->pere);
     }
     if(cour->frere == NULL && EstVide(pile)){
@@ -220,39 +231,79 @@ maillon2_t * CopieArbre(maillon_t * arbre1){
   return arbre2;
 }
 
+
 /* -------------------------------------------------------------------- */
 /* AffichagePostfixee    Affichage post fixee d'un arbre                */
-/*		       		       					*/
-/* En entree: arbre : l'arbre a afficher 	                	*/
+/*                              */
+/* En entree: arbre : l'arbre a afficher                    */
 /*                                                                      */
-/* En sortie: aucune						      	*/
+/* En sortie: aucune                    */
 /* -------------------------------------------------------------------- */
 void AffichagePostfixee(maillon_t * arbre){
-  maillon_t * cour;
-  pile_t * pile;
+  elem_t cour;
+  elem_t nbFilsCour;
+  elem_t prec;
+  elem_t nbFilsPrec;
+
+  pile_t * pilePrec ;
   int codeErreur = 0;
 
-  cour = arbre;
-  pile = InitPile(1000);
-     
-  while (cour != NULL && !codeErreur){
-	
-    while (cour->fils != NULL){
-      Empiler(pile, cour);
-      cour = cour->fils;
+  nbFilsPrec.fils = 0;
+  cour.noeud = arbre ;
+  pilePrec = InitPile(TAILLE);
+  
+  
+
+  while(cour.noeud != NULL && !codeErreur) {
+
+    if (cour.noeud->fils != NULL){
+      nbFilsCour.fils = 1;
+      Empiler(pilePrec, nbFilsCour);
+      codeErreur = Empiler(pilePrec, cour);
+      cour.noeud = cour.noeud->fils; 
     }
-    printf("%c ", cour->val);
-    cour = cour->frere;
-		
-    while (cour == NULL && !EstVide(pile)){
-      codeErreur = Depiler(pile, &cour);
-      printf("%c ", cour->val);
-      cour = cour->frere;
+    else{
+      nbFilsCour.fils = 0 ;
+      printf("%c[%d] ", cour.noeud->val, nbFilsCour.fils);
+      if (cour.noeud->frere != NULL){
+
+        if (!EstVide(pilePrec)){
+          Depiler(pilePrec,&prec);
+          Depiler(pilePrec,&nbFilsPrec);
+          nbFilsPrec.fils++;
+          Empiler(pilePrec, nbFilsPrec);
+          codeErreur = Empiler(pilePrec, prec);
+        }
+
+        cour.noeud = cour.noeud->frere ;
+      }
+      else{
+        while(cour.noeud != NULL && cour.noeud->frere == NULL){
+          if (!EstVide(pilePrec)){
+            Depiler(pilePrec,&cour);
+            Depiler(pilePrec,&nbFilsCour);
+            printf("%c[%d] ", cour.noeud->val, nbFilsCour.fils);
+          }
+          else{
+            cour.noeud = NULL;
+          }
+        }
+        if(cour.noeud != NULL){
+          cour.noeud = cour.noeud->frere ;
+          if (!EstVide(pilePrec)){
+            Depiler(pilePrec,&prec);
+            Depiler(pilePrec,&nbFilsPrec);
+            nbFilsPrec.fils++;
+            Empiler(pilePrec, nbFilsPrec);
+            codeErreur = Empiler(pilePrec, prec);
+          }
+        }
+      }
     }
   }
-  LibererPile(pile);
+  LibererPile(pilePrec);
+  printf("\n");
 }
-
 
 /* -------------------------------------------------------------------- */
 /* AffichageIte    Affichage iteratif de l'arbre                        */
@@ -266,16 +317,21 @@ void AffichageIte(maillon_t * arbre){
   maillon_t * cour;
   pile_t * pile;
   int codeErreur = 0;
+  elem_t tmp;
 
   cour = arbre;
   pile = InitPile(TAILLE);
          
   while (cour != NULL && !codeErreur){
     printf("%c ", cour->val);
-    if (cour->frere != NULL) Empiler(pile, cour);
+    if (cour->frere != NULL){
+      tmp.noeud = cour;
+      Empiler(pile, tmp);
+    }
     cour = cour->fils;
     if (cour == NULL && !EstVide(pile)){
-      codeErreur = Depiler(pile, &cour);
+      codeErreur = Depiler(pile, &tmp);
+      cour = tmp.noeud;
       cour = cour->frere ;
     }
   }
@@ -283,38 +339,46 @@ void AffichageIte(maillon_t * arbre){
   puts("");
 }
 
-/* -------------------------------------------------------------------- */
-/* AffichageIte2    Affichage iteratif de l'arbre avec pere             */
-/*                                                                      */
-/* En entree:  arbre : arbre a afficher 	                	*/
-/*                                                                      */
-/* En sortie: aucune						      	*/
-/* -------------------------------------------------------------------- */
-void AffichageIte2(maillon2_t * arbre){
 
+/* -------------------------------------------------------------------- */
+/* AffichageArbre2    Affichage postfixee de l'arbre avec lien pere     */
+/*                                                                      */
+/* En entree:  arbre : arbre a afficher                                 */
+/*                                                                      */
+/* En sortie: aucune                                                    */
+/* -------------------------------------------------------------------- */
+void AffichageArbre2(maillon2_t * arbre){
   maillon2_t * cour;
-  int fin;
 
-  fin = 0;
+  int codeErreur = 0;
   cour = arbre;
-  printf("(fils, pere) : \n");
-  printf("(%c, %c) ", cour->val, cour->pere->val);
 
-  while (!fin){
-    while (cour->fils != NULL){
-      cour = cour->fils;
-      printf("(%c, %c) ", cour->val, cour->pere->val);
-    }
-    while (cour->frere == NULL && cour->pere != cour){
-      cour = cour->pere;
-    }
-    if(cour->frere == NULL){
-      fin = 1;
+  while (cour != NULL && !codeErreur){
+    if (cour->fils != NULL){
+      cour = cour->fils; 
     }
     else{
-      cour = cour->frere;
-      printf("(%c, %c) ", cour->val, cour->pere->val);
+      printf("%c ", cour->val);
+      if (cour->frere != NULL){
+        cour = cour->frere ;
+      }
+      else{
+        while(cour != NULL && cour->frere == NULL){
+        
+          if (cour->pere == NULL){
+            cour = NULL ; 
+          }
+          else{
+            cour = cour->pere; 
+            printf("%c ", cour->val) ;
+          }
+        }
+
+        if(cour != NULL){
+          cour = cour->frere ;
+        }
+      }
     }
   }
-  puts("");
+  printf("\n") ; 
 }

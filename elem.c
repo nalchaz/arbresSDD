@@ -8,5 +8,10 @@
 /* En sortie: aucune                                                    */
 /* -------------------------------------------------------------------- */
 void AfficherElem(elem_t elem){
-  printf("%c\n", elem->val);
+	if(elem.noeud->val){
+ 		printf("%c\n", elem.noeud->val);
+	}
+	else{
+		printf("%c\n", elem.noeud->fils);
+	}
 }
