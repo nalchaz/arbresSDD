@@ -237,11 +237,6 @@ void cas8(maillon_t * arbre){
   printf("1) Arbre de base :\n");
   AffichageIte(arbre);
   printf("\n");
-  
-  pere = RechercheValeur(&arbre,'x');
-  prec = ParcoursFilsTrie(pere, 'r');
-  printf("RECHERCHE DU PERE x : %c \n", pere->val);
-  printf("PRECEDENT DE r : %c ", prec->val);
 
   RechercheEtInsertion(&arbre, 'r', 'x');
   printf("2) Insertion en milieu de liste de \"r\" fils de \"x\" :\n");

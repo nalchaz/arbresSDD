@@ -113,26 +113,28 @@ maillon_t * RechercheValeur(maillon_t ** arbre, char valeur){
 }
 
 /* -------------------------------------------------------------------- */
-/* ParcoursFilsTrie     Recherche de l'emplacement d'une        	*/
-/* 		      	valeur dans une liste de fils triée             */
+/* ParcoursFilsTrie     Recherche de l'emplacement d'une        		*/
+/* 		      	valeur dans une liste de fils triée             		*/
 /*                                                                      */
-/* En entree: pere : pere de la liste des fils                   	*/
-/*            valeur : valeur dont l'on souhaite connaître      	*/
-/*        	       l'emplacement  				        */
+/* En entree: pere : pere de la liste des fils                   		*/
+/*            valeur : valeur dont l'on souhaite connaître      		*/
+/*        	       l'emplacement  				        				*/
 /*                                                                      */
 /*    HYP : les fils sont triés par ordre croissant                     */
 /*                                                                      */
-/* En sortie: 						        	*/
+/* En sortie: 						        							*/
 /*  - si le pere V a au moins un fils : retourne l'adresse du fils    	*/
-/*    après lequel il faudrait insérer la valeur W, ou le père V si on doit l'insérer en tête                             */ 			                
-/*  - si le pere V n'a pas de fils : retourne l'adresse de V    	*/
+/*    après lequel il faudrait insérer la valeur W, ou le père V si     */ 
+/*    on doit l'insérer en tête                           		        */ 			                
+/*  - si le pere V n'a pas de fils : retourne l'adresse de V    		*/
 /* -------------------------------------------------------------------- */
 maillon_t * ParcoursFilsTrie(maillon_t * pere, char valeur){
 
   maillon_t ** prec ;
   prec = &pere;
-	
-  if ((*prec)->fils != NULL && (*prec)->fils->val < valeur){ /* Cas où le père possède au moins un fils qui est supérieur à W */
+
+  /* Cas où le père possède au moins un fils qui est supérieur à W */
+  if ((*prec)->fils != NULL && (*prec)->fils->val < valeur){ 
     prec = &((*prec)->fils);
     while ((*prec)->frere != NULL && (*prec)->frere->val < valeur ){
       prec = &((*prec)->frere) ;
@@ -144,15 +146,15 @@ maillon_t * ParcoursFilsTrie(maillon_t * pere, char valeur){
 
 /* -------------------------------------------------------------------- */
 /* RechercheEtInsertion    Insertion d'un fils de valeur W              */
-/* 	        	au point de valeur V s'il existe		*/
-/*		       		       					*/
-/* HYP : les fils d'un point sont triés par ordre croissant   		*/
+/* 	        	au point de valeur V s'il existe						*/
+/*		       		       												*/
+/* HYP : les fils d'un point sont triés par ordre croissant   			*/
 /*                                                                      */
-/* En entree: racine : la racine de l'arbre	                	*/
-/*            	   W : valeur du fils à insérer	                 	*/
-/*	           V : valeur du pere auquel on veut ajouter un fils	*/
+/* En entree: racine : la racine de l'arbre	                			*/
+/*            	   W : valeur du fils à insérer	                 		*/
+/*	           V : valeur du pere auquel on veut ajouter un fils		*/
 /*                                                                      */
-/* En sortie: aucune						      	*/
+/* En sortie: aucune						      						*/
 /* -------------------------------------------------------------------- */
 void RechercheEtInsertion(maillon_t ** racine, char W, char V){
   maillon_t *pere, *PereOuFrere, *nouv ;
@@ -164,11 +166,16 @@ void RechercheEtInsertion(maillon_t ** racine, char W, char V){
     nouv = CreerMaillon(W);
 		
     if (nouv != NULL){	
-      if (PereOuFrere != pere){ /* Cas où le père a au moins un fils inférieurs à W*/
-	nouv->frere = PereOuFrere->frere;
-	PereOuFrere->frere = nouv ;
-      }else{ /* Cas où le père n'a pas de fils ou des fils supérieurs à W */
-		 if (PereOuFrere->fils != NULL) nouv->frere = PereOuFrere->fils; /*Cas où le père n'a que des fils supérieurs à W */
+	  /* Cas où le père a au moins un fils inférieurs à W*/
+      if (PereOuFrere != pere){ 
+		nouv->frere = PereOuFrere->frere;
+		PereOuFrere->frere = nouv ;
+      }
+      /* Cas où le père n'a pas de fils ou des fils supérieurs à W */
+      else{ 
+		 /*Cas où le père n'a que des fils supérieurs à W */
+		 if (PereOuFrere->fils != NULL) 
+			nouv->frere = PereOuFrere->fils; 
 		 PereOuFrere->fils = nouv; 
       }
     }
@@ -176,12 +183,12 @@ void RechercheEtInsertion(maillon_t ** racine, char W, char V){
 }
 
 /* -------------------------------------------------------------------- */
-/* CopieArbre  Cree une copie d'un arbre avec des pointeurs sur pere   */
-/*		       		       					*/
+/* CopieArbre  Cree une copie d'un arbre avec des pointeurs sur pere    */
+/*		       		       												*/
 /*                                                                      */
-/* En entree: arbre1 : l'arbre a copier    	                	*/
+/* En entree: arbre1 : l'arbre a copier    	                			*/
 /*                                                                      */
-/* En sortie: l'arbre copie					      	*/
+/* En sortie: l'arbre copie					      						*/
 /* -------------------------------------------------------------------- */
 maillon2_t * CopieArbre(maillon_t * arbre1){
   maillon2_t * arbre2, * temp;
@@ -405,7 +412,7 @@ void LibererArbre(maillon_t * arbre){
   int codeErreur = 0;
 
   cour.noeud = arbre;
-  pile = InitPile(1000);
+  pile = InitPile(TAILLE);
      
   while (cour.noeud != NULL && !codeErreur){
 	
