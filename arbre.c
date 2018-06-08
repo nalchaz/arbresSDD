@@ -14,7 +14,8 @@ maillon_t * CreationArbre(char * NomFic){
   pile_t * pile;
   elem_t nouv;
   char c;
-  
+
+  arbre = NULL;
   pile = InitPile(TAILLE);
       
   fic = fopen(NomFic, "r");
@@ -26,46 +27,49 @@ maillon_t * CreationArbre(char * NomFic){
       c=fgetc(fic);
       arbre = CreerMaillon(c);
       prec = &arbre ;
-    }
-  }
-  c=fgetc(fic);
-  while(c != EOF){
-    switch(c){
-    case '(' :
       nouv.noeud = *prec;
-      Empiler(pile, nouv);
-      c=fgetc(fic);
-      temp = CreerMaillon(c);
-      (*prec)->fils = temp;
-      *prec = (*prec)->fils;
-      break;
-      
-    case ',' :
-      break;
-
-    case ')' :
-      if(!EstVide(pile)){
-        Depiler(pile, &nouv);
-      }
-      *prec=nouv.noeud;
-      break;
-      
-    case '\n' :
-      break;
-      
-    default :
-      temp = CreerMaillon(c);
-      (*prec)->frere = temp;
-      *prec = (*prec)->frere;
-     
-      break;
-
     }
+  
     c=fgetc(fic);
-  }
+    while(c != EOF){
+      switch(c){
+      case '(' :
+	nouv.noeud = *prec;
+	Empiler(pile, nouv);
+	c=fgetc(fic);
+	temp = CreerMaillon(c);
+	(*prec)->fils = temp;
+	*prec = (*prec)->fils;
+	break;
+      
+      case ',' :
+	break;
 
-  puts("");
-  fclose(fic);
+      case ')' :
+	if(!EstVide(pile)){
+	  Depiler(pile, &nouv);
+	}
+	*prec=nouv.noeud;
+	
+	break;
+      
+      case '\n' :
+	break;
+      
+      default :
+	temp = CreerMaillon(c);
+	(*prec)->frere = temp;
+	*prec = (*prec)->frere;
+     
+	break;
+
+      }
+      c=fgetc(fic);
+    }
+
+    puts("");
+    fclose(fic);
+  }
   LibererPile(pile);
   return arbre;
     
@@ -80,21 +84,21 @@ maillon_t * CreationArbre(char * NomFic){
 /* En sortie: adresse de la valeur recherchée		         	*/
 /* 			  NULL si non trouvée                           */
 /* -------------------------------------------------------------------- */
-maillon_t * RechercheValeur(maillon_t ** racine, char valeur){
+maillon_t * RechercheValeur(maillon_t ** arbre, char valeur){
 	
   file_t * file;
   int CodeErreur ;
-  elem_t cour, fils;
+  elem_t cour, filsCour;
 
-  cour.noeud = *racine;
+  cour.noeud = *arbre;
   file = InitFile(TAILLE);
   CodeErreur = 0;
 	
   while (!CodeErreur && cour.noeud != NULL && cour.noeud->val != valeur){	
     while (!CodeErreur && cour.noeud != NULL && cour.noeud->val != valeur){	
       if (cour.noeud->fils != NULL){
-	fils.noeud = cour.noeud->fils;
-        CodeErreur = Enfiler(file, fils);
+	filsCour.noeud = cour.noeud->fils;
+        CodeErreur = Enfiler(file, filsCour);
       }
       cour.noeud = cour.noeud->frere;
     }
@@ -115,6 +119,8 @@ maillon_t * RechercheValeur(maillon_t ** racine, char valeur){
 /* En entree: pere : pere de la liste des fils                   	*/
 /*            valeur : valeur dont l'on souhaite connaître      	*/
 /*        	       l'emplacement  				        */
+/*                                                                      */
+/*    HYP : les fils sont triés par ordre croissant                     */
 /*                                                                      */
 /* En sortie: 						        	*/
 /*  - si le pere V a au moins un fils : retourne l'adresse du fils    	*/
@@ -141,7 +147,7 @@ maillon_t * ParcoursFilsTrie(maillon_t * pere, char valeur){
 /* RechercheEtInsertion    Insertion d'un fils de valeur W              */
 /* 	        	au point de valeur V s'il existe		*/
 /*		       		       					*/
-/* HYP : les fils d'un points sont triés par ordre croissant   		*/
+/* HYP : les fils d'un point sont triés par ordre croissant   		*/
 /*                                                                      */
 /* En entree: racine : la racine de l'arbre	                	*/
 /*            	   W : valeur du fils à insérer	                 	*/
@@ -188,14 +194,19 @@ maillon2_t * CopieArbre(maillon_t * arbre1){
   pile = InitPile(TAILLE);
   fin = 0;
 	
-  /* Création de la racine */
-  arbre2 = CreerMaillon2(arbre1->val);
-  arbre2->pere = NULL;
-  arbre2->frere = NULL;
-	
-  /* Courant sur l'arbre a copier, prec sur le nouvel arbre */
-  cour.noeud = arbre1;
-  prec = &arbre2;
+  /* Création de la racine si elle existe*/
+  if(arbre1){
+    arbre2 = CreerMaillon2(arbre1->val);
+    arbre2->pere = NULL;
+    arbre2->frere = NULL;
+    /* Courant sur l'arbre a copier, prec sur le nouvel arbre */
+    cour.noeud = arbre1;
+    prec = &arbre2;
+  }
+  else{
+    arbre2 = NULL;
+    fin = 1;
+  }
     
   while(!fin){
 
@@ -392,30 +403,31 @@ void AffichagePostfixe2(maillon2_t * arbre){
 void LibererArbre(maillon_t * arbre){
   elem_t cour, tmp;
   pile_t * pile;
+  int codeErreur = 0;
 
-  pile = InitPile(TAILLE);
   cour.noeud = arbre;
-
-  while(cour.noeud != NULL){
-    while(cour.noeud->fils != NULL){
+  pile = InitPile(1000);
+     
+  while (cour.noeud != NULL && !codeErreur){
+	
+    while (cour.noeud->fils != NULL){
       Empiler(pile, cour);
       cour.noeud = cour.noeud->fils;
     }
     tmp = cour;
     cour.noeud = cour.noeud->frere;
     free(tmp.noeud);
-    if(cour.noeud == NULL && !EstVide(pile)){
-      Depiler(pile, &cour);
-      tmp = cour;
+		
+    while (cour.noeud == NULL && !EstVide(pile)){
+      codeErreur = Depiler(pile, &cour);
+      tmp=cour;
       cour.noeud = cour.noeud->frere;
       free(tmp.noeud);
     }
   }
-  free(arbre);
   LibererPile(pile);
 }
-
-
+  
 /* -------------------------------------------------------------------- */
 /* LibererArbre2          Libere l'arbre a pointeur sur pere            */
 /*                                                                      */
@@ -427,20 +439,22 @@ void LibererArbre2(maillon2_t * arbre){
   maillon2_t * cour, * tmp;
 
   cour = arbre;
-
-  while(cour != NULL){
-    while(cour->fils != NULL){
+     
+  while (cour != NULL){
+	
+    while (cour->fils != NULL){
       cour = cour->fils;
     }
     tmp = cour;
     cour = cour->frere;
-    if(cour == NULL){
+		
+    while (cour == NULL && tmp != NULL){
       cour = tmp->pere;
       free(tmp);
-      tmp = cour;
-      cour=cour->frere;
+      tmp=cour;
+      if(cour)
+	cour = cour->frere;
     }
     free(tmp);
   }
-  free(arbre);
 }

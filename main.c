@@ -1,31 +1,20 @@
 #include "arbre.h"
+#include "cas.h"
 
 int main(void){
   maillon_t * arbre;
   maillon2_t * arbre2;
+
+  arbre = NULL;
+  arbre2 = NULL;
   
-  arbre = CreationArbre("arbre.txt");
-  printf("1) : Arbre de base :\n");
-  AffichageIte(arbre);
-  printf("\n");
-
-  RechercheEtInsertion(&arbre, 'r', 'x');
-  printf("2) Insertion de \"r\" fils de \"x\" :\n");
-  AffichageIte(arbre);
-  printf("\n");
-
-  printf("3) Affichage postfixe (format val[nbFils]):\n");
-  AffichagePostfixe(arbre);
-  printf("\n");
-
-  printf("4) Copie de l'arbre\n");
-  arbre2 = CopieArbre(arbre);
-
-  printf("5) Affichage postfixe de l'arbre 2 :\n");
-  AffichagePostfixe2(arbre2);
-
-  LibererArbre(arbre);
-  LibererArbre2(arbre2);
+  cas1(arbre, arbre2);
+  cas2(arbre, arbre2);
+  cas3(arbre, arbre2);
+  cas4(arbre, arbre2);
+  cas5(arbre, arbre2);
+  cas6(arbre, arbre2);
+  cas7(arbre, arbre2);
   
   return 0;
 }
