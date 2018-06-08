@@ -9,6 +9,6 @@ void cas4(maillon_t *, maillon2_t *);
 void cas5(maillon_t *, maillon2_t *);
 void cas6(maillon_t *, maillon2_t *);
 void cas7(maillon_t *, maillon2_t *);
-void cas8(maillon_t *, maillon2_t *);
+void cas8(maillon_t *);
 
 #endif
