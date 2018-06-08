@@ -310,25 +310,22 @@ void AffichagePostfixee(maillon_t * arbre){
 /* -------------------------------------------------------------------- */
 void AffichageIte(maillon_t * arbre){
 
-  maillon_t * cour;
+  elem_t cour;
   pile_t * pile;
   int codeErreur = 0;
-  elem_t tmp;
 
-  cour = arbre;
+  cour.noeud = arbre;
   pile = InitPile(TAILLE);
-         
-  while (cour != NULL && !codeErreur){
-    printf("%c ", cour->val);
-    if (cour->frere != NULL){
-      tmp.noeud = cour;
-      Empiler(pile, tmp);
+  
+  while (cour.noeud != NULL && !codeErreur){
+    printf("%c ", cour.noeud->val);
+    if (cour.noeud->frere != NULL){
+      Empiler(pile, cour);
     }
-    cour = cour->fils;
-    if (cour == NULL && !EstVide(pile)){
-      codeErreur = Depiler(pile, &tmp);
-      cour = tmp.noeud;
-      cour = cour->frere ;
+    cour.noeud = cour.noeud->fils;
+    if (cour.noeud == NULL && !EstVide(pile)){
+      codeErreur = Depiler(pile, &cour);
+      cour.noeud = cour.noeud->frere ;
     }
   }
   LibererPile(pile);
@@ -348,7 +345,7 @@ void AffichageArbre2(maillon2_t * arbre){
 
   int codeErreur = 0;
   cour = arbre;
-
+ 
   while (cour != NULL && !codeErreur){
     if (cour->fils != NULL){
       cour = cour->fils; 
