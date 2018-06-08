@@ -14,15 +14,15 @@ int main(void){
   AffichageIte(arbre);
   printf("\n");
 
-  printf("3) Affichage postfixee (format val[nbFils]):\n");
-  AffichagePostfixee(arbre);
+  printf("3) Affichage postfixe (format val[nbFils]):\n");
+  AffichagePostfixe(arbre);
   printf("\n");
 
-  printf("Copie de l'arbre\n");
+  printf("4) Copie de l'arbre\n");
   arbre2 = CopieArbre(arbre);
 
-  printf("Affichage postfixee de l'arbre 2 :\n");
-  AffichageArbre2(arbre2);
+  printf("5) Affichage postfixe de l'arbre 2 :\n");
+  AffichagePostfixe2(arbre2);
 
   LibererArbre(arbre);
   LibererArbre2(arbre2);

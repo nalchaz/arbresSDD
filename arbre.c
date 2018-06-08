@@ -246,13 +246,13 @@ int IncrementerNbFilsPere(pile_t * pile){
 }
 
 /* -------------------------------------------------------------------- */
-/* AffichagePostfixee    Affichage post fixee d'un arbre                */
+/* AffichagePostfixe    Affichage post fixee d'un arbre                */
 /*                                                                      */
 /* En entree: arbre : l'arbre a afficher                                */
 /*                                                                      */
 /* En sortie: aucune                                                    */
 /* -------------------------------------------------------------------- */
-void AffichagePostfixee(maillon_t * arbre){
+void AffichagePostfixe(maillon_t * arbre){
   elem_t cour;
   elem_t nbFilsCour;
 
@@ -339,13 +339,13 @@ void AffichageIte(maillon_t * arbre){
 
 
 /* -------------------------------------------------------------------- */
-/* AffichageArbre2    Affichage postfixee de l'arbre avec lien pere     */
+/* AffichagePostfixe2    Affichage postfixee de l'arbre avec lien pere */
 /*                                                                      */
 /* En entree:  arbre : arbre a afficher                                 */
 /*                                                                      */
 /* En sortie: aucune                                                    */
 /* -------------------------------------------------------------------- */
-void AffichageArbre2(maillon2_t * arbre){
+void AffichagePostfixe2(maillon2_t * arbre){
   maillon2_t * cour;
 
   int codeErreur = 0;
