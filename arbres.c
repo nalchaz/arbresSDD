@@ -82,31 +82,29 @@ maillon_t * CreationArbre(char * NomFic){
 /* -------------------------------------------------------------------- */
 maillon_t * RechercheValeur(maillon_t ** racine, char valeur){
 	
-  maillon_t * cour ;
   file_t * file;
   int CodeErreur ;
-	elem_t tmp;
+  elem_t cour, fils;
 
-  cour = *racine;
+  cour.noeud = *racine;
   file = InitFile(TAILLE);
   CodeErreur = 0;
 	
-  while (!CodeErreur && cour != NULL && cour->val != valeur){	
-    while (!CodeErreur && cour != NULL && cour->val != valeur){	
-      if (cour->fils != NULL){
-        tmp.noeud = cour->fils;
-        CodeErreur = Enfiler(file, tmp);
+  while (!CodeErreur && cour.noeud != NULL && cour.noeud->val != valeur){	
+    while (!CodeErreur && cour.noeud != NULL && cour.noeud->val != valeur){	
+      if (cour.noeud->fils != NULL){
+	fils.noeud = cour.noeud->fils;
+        CodeErreur = Enfiler(file, fils);
       }
-      cour = cour->frere;
+      cour.noeud = cour.noeud->frere;
     }
-    if (cour == NULL && !EstVidef(file)){ 
-      CodeErreur = Defiler(file, &tmp);
-      cour = tmp.noeud;
+    if (cour.noeud == NULL && !EstVidef(file)){ 
+      CodeErreur = Defiler(file, &cour);
     }	
   }
 	
   LibererFile(file);
-  return cour;
+  return cour.noeud;
 	
 }
 
@@ -152,7 +150,7 @@ maillon_t * parcoursFilsTrie(maillon_t * pere, char valeur){
 /* En sortie: aucune						      	*/
 /* -------------------------------------------------------------------- */
 void RechercheEtInsertion(maillon_t ** racine, char W, char V){
-  maillon_t 		*pere, *PereOuFrere, *nouv ;
+  maillon_t *pere, *PereOuFrere, *nouv ;
 
   pere = RechercheValeur(racine, V);
 	
