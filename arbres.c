@@ -44,9 +44,10 @@ maillon_t * CreationArbre(char * NomFic){
       break;
 
     case ')' :
-      if(EstVide(pile) == 0)
+      if(!EstVide(pile)){
         Depiler(pile, &nouv);
-        *prec=nouv.noeud;
+      }
+      *prec=nouv.noeud;
       break;
       
     case '\n' :

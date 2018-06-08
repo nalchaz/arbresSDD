@@ -12,6 +12,6 @@ void AfficherElem(elem_t elem){
  		printf("%c\n", elem.noeud->val);
 	}
 	else{
-		printf("%c\n", elem.noeud->fils);
+		printf("%d\n", elem.fils);
 	}
 }
