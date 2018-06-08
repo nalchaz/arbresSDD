@@ -8,7 +8,7 @@ int main(void){
   arbre = NULL;
   arbre2 = NULL;
 
-  
+
   cas1(arbre, arbre2);
   /*
   cas2(arbre, arbre2);
@@ -17,7 +17,7 @@ int main(void){
   cas5(arbre, arbre2);
   cas6(arbre, arbre2);
   cas7(arbre, arbre2); 
-  cas8(arbre, arbre2);
+  casHuit(arbre, arbre2);
   */
   
   return 0;

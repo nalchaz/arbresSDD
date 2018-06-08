@@ -230,26 +230,33 @@ void cas7(maillon_t * arbre, maillon2_t * arbre2){
 /*                                                                      */
 /* -------------------------------------------------------------------- */
 
-void cas8(maillon_t * arbre, maillon2_t * arbre2){
+void casHuit(maillon_t * arbre, maillon2_t * arbre2){
+
+  maillon_t * pere, *prec ;
 
   puts("[CAS DES INSERTIONS]");
   arbre = CreationArbre("arbres/arbre.txt");
   printf("1) Arbre de base :\n");
   AffichageIte(arbre);
   printf("\n");
+  
+  pere = RechercheValeur(&arbre,'x');
+  prec = ParcoursFilsTrie(pere, 'r');
+  printf("RECHERCHE DU PERE x : %c \n", pere->val);
+  printf("PRECEDENT DE r : %c ", prec->val);
 
   RechercheEtInsertion(&arbre, 'r', 'x');
   printf("2) Insertion en milieu de liste de \"r\" fils de \"x\" :\n");
   AffichageIte(arbre);
   printf("\n");
-
-  RechercheEtInsertion(&arbre, 'e', 'a');
-  printf("3) Insertion en debut de liste de \"e\" fils de \"a\" :\n");
+  
+  RechercheEtInsertion(&arbre, 'a', 'a');
+  printf("3) Insertion en debut de liste de \"a\" fils de \"a\" :\n");
   AffichageIte(arbre);
   printf("\n");
   
-  RechercheEtInsertion(&arbre, 'z', 'w');
-  printf("4) Insertion en fin de liste de \"z\" fils de \"w\" :\n");
+  RechercheEtInsertion(&arbre, 'z', 'x');
+  printf("4) Insertion en fin de liste de \"z\" fils de \"x\" :\n");
   AffichageIte(arbre);
   printf("\n");
 
