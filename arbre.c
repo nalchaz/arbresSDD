@@ -1,7 +1,7 @@
 #include "arbre.h"
 
 /* -------------------------------------------------------------------- */
-/* CreationArbre     Cree un arbre a partir d'un fichier               */
+/* CreationArbre     Cree un arbre a partir d'un fichier                */
 /*                                                                      */
 /* En entree: NomFic : nom du fichier dans lequel trouver l'arbre       */
 /*                                                                      */
@@ -124,8 +124,7 @@ maillon_t * RechercheValeur(maillon_t ** arbre, char valeur){
 /*                                                                      */
 /* En sortie: 						        	*/
 /*  - si le pere V a au moins un fils : retourne l'adresse du fils    	*/
-/*    après lequel il faudrait		                                */ 
-/*    insérer la valeur W				                */
+/*    après lequel il faudrait insérer la valeur W, ou le père V si on doit l'insérer en tête                             */ 			                
 /*  - si le pere V n'a pas de fils : retourne l'adresse de V    	*/
 /* -------------------------------------------------------------------- */
 maillon_t * ParcoursFilsTrie(maillon_t * pere, char valeur){
@@ -133,9 +132,9 @@ maillon_t * ParcoursFilsTrie(maillon_t * pere, char valeur){
   maillon_t ** prec ;
   prec = &pere;
 	
-  if ((*prec)->fils != NULL){ /* Cas où le père possède au moins un fils */
+  if ((*prec)->fils != NULL && (*prec)->fils->val < valeur){ /* Cas où le père possède au moins un fils qui est supérieur à W */
     prec = &((*prec)->fils);
-    while (*prec != NULL && (*prec)->val > valeur ){
+    while ((*prec)->frere != NULL && (*prec)->frere->val < valeur ){
       prec = &((*prec)->frere) ;
     }
   }
@@ -164,13 +163,13 @@ void RechercheEtInsertion(maillon_t ** racine, char W, char V){
     PereOuFrere = ParcoursFilsTrie(pere, W);
     nouv = CreerMaillon(W);
 		
-    if (nouv != NULL){
-			
-      if (PereOuFrere != pere){ /* Cas où le père a au moins un fils */
+    if (nouv != NULL){	
+      if (PereOuFrere != pere){ /* Cas où le père a au moins un fils inférieurs à W*/
 	nouv->frere = PereOuFrere->frere;
 	PereOuFrere->frere = nouv ;
-      }else{ /* Cas où le père n'a pas de fils */
-	PereOuFrere->fils = nouv;
+      }else{ /* Cas où le père n'a pas de fils ou des fils supérieurs à W */
+		 if (PereOuFrere->fils != NULL) nouv->frere = PereOuFrere->fils; /*Cas où le père n'a que des fils supérieurs à W */
+		 PereOuFrere->fils = nouv; 
       }
     }
   }
