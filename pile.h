@@ -29,4 +29,5 @@ int Empiler(pile_t *, elem_t);
 int Depiler(pile_t *, elem_t *);
 void AfficherPile(pile_t *);
 void LibererPile(pile_t *);
+
 #endif

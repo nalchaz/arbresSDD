@@ -1,7 +1,7 @@
-#include "arbres.h"
+#include "arbre.h"
 
 /* -------------------------------------------------------------------- */
-/* CreationArbre     Creer un arbre a partir d'un fichier               */
+/* CreationArbre     Cree un arbre a partir d'un fichier               */
 /*                                                                      */
 /* En entree: NomFic : nom du fichier dans lequel trouver l'arbre       */
 /*                                                                      */
@@ -109,7 +109,7 @@ maillon_t * RechercheValeur(maillon_t ** racine, char valeur){
 }
 
 /* -------------------------------------------------------------------- */
-/* parcoursFilsTrie     Recherche de l'emplacement d'une        	*/
+/* ParcoursFilsTrie     Recherche de l'emplacement d'une        	*/
 /* 		      	valeur dans une liste de fils triée             */
 /*                                                                      */
 /* En entree: pere : pere de la liste des fils                   	*/
@@ -122,7 +122,7 @@ maillon_t * RechercheValeur(maillon_t ** racine, char valeur){
 /*    insérer la valeur W				                */
 /*  - si le pere V n'a pas de fils : retourne l'adresse de V    	*/
 /* -------------------------------------------------------------------- */
-maillon_t * parcoursFilsTrie(maillon_t * pere, char valeur){
+maillon_t * ParcoursFilsTrie(maillon_t * pere, char valeur){
 
   maillon_t ** prec ;
   prec = &pere;
@@ -155,7 +155,7 @@ void RechercheEtInsertion(maillon_t ** racine, char W, char V){
   pere = RechercheValeur(racine, V);
 	
   if (pere != NULL){
-    PereOuFrere = parcoursFilsTrie(pere, W);
+    PereOuFrere = ParcoursFilsTrie(pere, W);
     nouv = CreerMaillon(W);
 		
     if (nouv != NULL){
@@ -171,7 +171,7 @@ void RechercheEtInsertion(maillon_t ** racine, char W, char V){
 }
 
 /* -------------------------------------------------------------------- */
-/* CopieArbre  Creer une copie d'un arbre avec des pointeurs sur pere   */
+/* CopieArbre  Cree une copie d'un arbre avec des pointeurs sur pere   */
 /*		       		       					*/
 /*                                                                      */
 /* En entree: arbre1 : l'arbre a copier    	                	*/
@@ -223,30 +223,44 @@ maillon2_t * CopieArbre(maillon_t * arbre1){
       prec = &((*prec)->frere);
     }		 
   }
-	
+  LibererPile(pile);	
   return arbre2;
 }
 
+/* -------------------------------------------------------------------- */
+/* IncrementerNbFilsPere       Incremente le nombre de fils             */
+/*                                                                      */
+/* En entree: pile : pile dans laquelle se trouve le nombre de fils     */
+/*                                                                      */
+/* En sortie: code erreur de la fonction Empiler                        */
+/* -------------------------------------------------------------------- */
+int IncrementerNbFilsPere(pile_t * pile){
+  elem_t nbFils;
+  int codeErreur;
+  
+  Depiler(pile, &nbFils);
+  nbFils.fils++;
+  codeErreur = Empiler(pile, nbFils);
+  
+  return codeErreur;
+}
 
 /* -------------------------------------------------------------------- */
 /* AffichagePostfixee    Affichage post fixee d'un arbre                */
-/*                              */
-/* En entree: arbre : l'arbre a afficher                    */
 /*                                                                      */
-/* En sortie: aucune                    */
+/* En entree: arbre : l'arbre a afficher                                */
+/*                                                                      */
+/* En sortie: aucune                                                    */
 /* -------------------------------------------------------------------- */
 void AffichagePostfixee(maillon_t * arbre){
   elem_t cour;
   elem_t nbFilsCour;
-  elem_t prec;
-  elem_t nbFilsPrec;
 
-  pile_t * pilePrec ;
+  pile_t * pile;
   int codeErreur = 0;
 
-  nbFilsPrec.fils = 0;
   cour.noeud = arbre ;
-  pilePrec = InitPile(TAILLE);
+  pile = InitPile(TAILLE);
   
   
 
@@ -254,30 +268,25 @@ void AffichagePostfixee(maillon_t * arbre){
 
     if (cour.noeud->fils != NULL){
       nbFilsCour.fils = 1;
-      Empiler(pilePrec, nbFilsCour);
-      codeErreur = Empiler(pilePrec, cour);
+      Empiler(pile, cour);
+      codeErreur = Empiler(pile, nbFilsCour);
       cour.noeud = cour.noeud->fils; 
     }
     else{
       nbFilsCour.fils = 0 ;
       printf("%c[%d] ", cour.noeud->val, nbFilsCour.fils);
       if (cour.noeud->frere != NULL){
-
-        if (!EstVide(pilePrec)){
-          Depiler(pilePrec,&prec);
-          Depiler(pilePrec,&nbFilsPrec);
-          nbFilsPrec.fils++;
-          Empiler(pilePrec, nbFilsPrec);
-          codeErreur = Empiler(pilePrec, prec);
+        if(!EstVide(pile)){
+	  codeErreur = IncrementerNbFilsPere(pile);
         }
 
         cour.noeud = cour.noeud->frere ;
       }
       else{
         while(cour.noeud != NULL && cour.noeud->frere == NULL){
-          if (!EstVide(pilePrec)){
-            Depiler(pilePrec,&cour);
-            Depiler(pilePrec,&nbFilsCour);
+          if (!EstVide(pile)){
+	    Depiler(pile,&nbFilsCour);
+            Depiler(pile,&cour);
             printf("%c[%d] ", cour.noeud->val, nbFilsCour.fils);
           }
           else{
@@ -286,18 +295,14 @@ void AffichagePostfixee(maillon_t * arbre){
         }
         if(cour.noeud != NULL){
           cour.noeud = cour.noeud->frere ;
-          if (!EstVide(pilePrec)){
-            Depiler(pilePrec,&prec);
-            Depiler(pilePrec,&nbFilsPrec);
-            nbFilsPrec.fils++;
-            Empiler(pilePrec, nbFilsPrec);
-            codeErreur = Empiler(pilePrec, prec);
+          if (!EstVide(pile)){
+            codeErreur = IncrementerNbFilsPere(pile);
           }
         }
       }
     }
   }
-  LibererPile(pilePrec);
+  LibererPile(pile);
   printf("\n");
 }
 
@@ -373,5 +378,69 @@ void AffichageArbre2(maillon2_t * arbre){
       }
     }
   }
-  printf("\n") ; 
+  printf("\n\n") ; 
+}
+
+
+/* -------------------------------------------------------------------- */
+/* LibererArbre            Libere l'arbre                               */
+/*                                                                      */
+/* En entree: maillon_t : l'arbre a liberer                             */
+/*                                                                      */
+/* En sortie: aucune                                                    */
+/* -------------------------------------------------------------------- */
+void LibererArbre(maillon_t * arbre){
+  elem_t cour, tmp;
+  pile_t * pile;
+
+  pile = InitPile(TAILLE);
+  cour.noeud = arbre;
+
+  while(cour.noeud != NULL){
+    while(cour.noeud->fils != NULL){
+      Empiler(pile, cour);
+      cour.noeud = cour.noeud->fils;
+    }
+    tmp = cour;
+    cour.noeud = cour.noeud->frere;
+    free(tmp.noeud);
+    if(cour.noeud == NULL && !EstVide(pile)){
+      Depiler(pile, &cour);
+      tmp = cour;
+      cour.noeud = cour.noeud->frere;
+      free(tmp.noeud);
+    }
+  }
+  free(arbre);
+  LibererPile(pile);
+}
+
+
+/* -------------------------------------------------------------------- */
+/* LibererArbre2          Libere l'arbre a pointeur sur pere            */
+/*                                                                      */
+/* En entree: maillon2_t : l'arbre avec pointeur pere a liberer         */
+/*                                                                      */
+/* En sortie: aucune                                                    */
+/* -------------------------------------------------------------------- */
+void LibererArbre2(maillon2_t * arbre){
+  maillon2_t * cour, * tmp;
+
+  cour = arbre;
+
+  while(cour != NULL){
+    while(cour->fils != NULL){
+      cour = cour->fils;
+    }
+    tmp = cour;
+    cour = cour->frere;
+    if(cour == NULL){
+      cour = tmp->pere;
+      free(tmp);
+      tmp = cour;
+      cour=cour->frere;
+    }
+    free(tmp);
+  }
+  free(arbre);
 }

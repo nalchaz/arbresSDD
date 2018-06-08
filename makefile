@@ -3,7 +3,7 @@ CC = gcc
 # options
 CFLAGS = -Wall -Wextra -pedantic -ansi -g
 # liste des fichiers objets
-OBJ = main.o liste.o pile.o file.o arbres.o elem.o
+OBJ = main.o liste.o pile.o file.o arbre.o elem.o
 # règle de production finale :
 main : $(OBJ)
 	$(CC) $(OBJ) -o prog
@@ -14,8 +14,8 @@ pile.o : pile.h pile.c
 	$(CC) -c pile.c $(CFLAGS)
 file.o : file.h file.c
 	$(CC) -c file.c $(CFLAGS)
-arbres.o : arbres.h arbres.c
-	$(CC) -c arbres.c $(CFLAGS)
+arbre.o : arbre.h arbre.c
+	$(CC) -c arbre.c $(CFLAGS)
 elem.o : elem.h elem.c
 	$(CC) -c elem.c $(CFLAGS)
 

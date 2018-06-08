@@ -9,12 +9,17 @@
 
 maillon_t * CreationArbre(char *);
 maillon_t * RechercheValeur(maillon_t **, char);
-maillon_t * parcoursFilsTrie(maillon_t *, char);
+maillon_t * ParcoursFilsTrie(maillon_t *, char);
 maillon2_t * CopieArbre(maillon_t *);
 
 void RechercheEtInsertion(maillon_t **, char, char);
+
+int IncrementerNbFilsPere(pile_t *);
 void AffichagePostfixee(maillon_t *);
 void AffichageIte(maillon_t *);
 void AffichageArbre2(maillon2_t *);
+
+void LibererArbre(maillon_t *);
+void LibererArbre2(maillon2_t *);
 
 #endif
