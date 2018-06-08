@@ -181,10 +181,9 @@ void RechercheEtInsertion(maillon_t ** racine, char W, char V){
 maillon2_t * CopieArbre(maillon_t * arbre1){
   maillon2_t * arbre2, * temp;
   maillon2_t ** prec;
-  maillon_t * cour;
+  elem_t cour;
   int fin;
   pile_t *pile;
-  elem_t tmp;
 	
   pile = InitPile(TAILLE);
   fin = 0;
@@ -195,32 +194,30 @@ maillon2_t * CopieArbre(maillon_t * arbre1){
   arbre2->frere = NULL;
 	
   /* Courant sur l'arbre a copier, prec sur le nouvel arbre */
-  cour = arbre1;
+  cour.noeud = arbre1;
   prec = &arbre2;
     
   while(!fin){
 
-    while(cour->fils != NULL){
-      tmp.noeud = cour;
-      Empiler(pile, tmp);
-      cour = cour->fils;
-      temp = CreerMaillon2(cour->val);
+    while(cour.noeud->fils != NULL){
+      Empiler(pile, cour);
+      cour.noeud = cour.noeud->fils;
+      temp = CreerMaillon2(cour.noeud->val);
       (*prec)->fils = temp;
       (*prec)->fils->pere = *prec;
       prec = &((*prec)->fils);
     }
     
-    while (cour->frere == NULL && !EstVide(pile)){ 
-      Depiler(pile, &tmp);
-      cour = tmp.noeud;
+    while (cour.noeud->frere == NULL && !EstVide(pile)){ 
+      Depiler(pile, &cour);
       prec = &((*prec)->pere);
     }
-    if(cour->frere == NULL && EstVide(pile)){
+    if(cour.noeud->frere == NULL && EstVide(pile)){
       fin = 1;
     }
     else{
-      cour = cour->frere;
-      temp = CreerMaillon2(cour->val);
+      cour.noeud = cour.noeud->frere;
+      temp = CreerMaillon2(cour.noeud->val);
       (*prec)->frere = temp;
       (*prec)->frere->pere = (*prec)->pere;
       prec = &((*prec)->frere);
