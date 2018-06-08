@@ -230,7 +230,7 @@ void cas7(maillon_t * arbre, maillon2_t * arbre2){
 /*                                                                      */
 /* -------------------------------------------------------------------- */
 
-void cas8(maillon_t * arbre, maillon2_t * arbre2){
+void cas8(maillon_t * arbre){
 
   puts("[CAS DES INSERTIONS]");
   arbre = CreationArbre("arbres/arbre.txt");
@@ -259,5 +259,4 @@ void cas8(maillon_t * arbre, maillon2_t * arbre2){
   printf("\n");
   
   LibererArbre(arbre);
-  LibererArbre2(arbre2);
 }
