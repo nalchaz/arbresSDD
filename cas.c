@@ -225,3 +225,39 @@ void cas7(maillon_t * arbre, maillon2_t * arbre2){
   LibererArbre2(arbre2);
 }
 
+/* -------------------------------------------------------------------- */
+/* cas8         Cas d'insertion de valeur dans un arbre                 */
+/*                                                                      */
+/* -------------------------------------------------------------------- */
+
+void cas8(maillon_t * arbre, maillon2_t * arbre2){
+
+  puts("[CAS DES INSERTIONS]");
+  arbre = CreationArbre("arbres/arbre.txt");
+  printf("1) Arbre de base :\n");
+  AffichageIte(arbre);
+  printf("\n");
+
+  RechercheEtInsertion(&arbre, 'r', 'x');
+  printf("2) Insertion en milieu de liste de \"r\" fils de \"x\" :\n");
+  AffichageIte(arbre);
+  printf("\n");
+
+  RechercheEtInsertion(&arbre, 'e', 'a');
+  printf("3) Insertion en debut de liste de \"e\" fils de \"a\" :\n");
+  AffichageIte(arbre);
+  printf("\n");
+  
+  RechercheEtInsertion(&arbre, 'z', 'w');
+  printf("4) Insertion en fin de liste de \"z\" fils de \"w\" :\n");
+  AffichageIte(arbre);
+  printf("\n");
+
+  RechercheEtInsertion(&arbre, 'y', 'n');
+  printf("5) Insertion pere inexistant de \"y\" fils de \"n\" :\n");
+  AffichageIte(arbre);
+  printf("\n");
+  
+  LibererArbre(arbre);
+  LibererArbre2(arbre2);
+}
